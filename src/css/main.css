@@ -1,0 +1,126 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-size: 1.2rem;
+  line-height: 1.5;
+}
+
+body {
+  height: 100vh;
+  background-color: aliceblue;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  background-color: lightblue;
+  font-weight: bold;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  background-color: #1e90ff;
+  color: white;
+  cursor: pointer;
+}
+
+.lobby {
+  display: flex;
+  flex-direction: column-reverse;
+  height: 100%;
+  width: 100%;
+  gap: 10px;
+  margin: 20px;
+  overflow: auto;
+}
+
+.floor-container {
+  height: 90px;
+  position: relative;
+  min-height: 90px;
+}
+
+.floor {
+  height: 1px;
+  width: calc(100% - 40px);
+  position: absolute;
+  bottom: 0;
+}
+
+.floor-label {
+  position: absolute;
+  color: black;
+  bottom: 5px;
+}
+
+.lifts-container {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  bottom: 5px;
+  left: 150px;
+  gap: 20px;
+}
+
+.lift {
+  display: flex;
+  height: 50px;
+  width: 50px;
+  background-color: lightgray;
+}
+
+.left-door {
+  width: 25px;
+  height: inherit;
+  border: 1px solid black;
+}
+
+.right-door {
+  width: 25px;
+  height: inherit;
+  border: 1px solid black;
+}
+
+.lift-buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: absolute;
+  bottom: 5px;
+  left: 90px;
+}
+
+.lift-button {
+  width: 20px;
+  height: 20px;
+  font-size: 15px;
+  border-radius: 2px;
+  border: 1px solid black;
+  background-color: lightgray;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.visible {
+  display: flex;
+}
+
+.hidden {
+  display: none;
+}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lift simulation</title>
+    <link rel="stylesheet" href="css/main.css" />
+  </head>
+  <body>
+    <div id="form-container" class="form-container visible">
+      <form id="form" class="form">
+        <label for="floors">Floors (Max: 10)</label>
+        <input type="number" id="floors" name="floors" placeholder="5" />
+        <label for="lifts">Lifts (Max: 5)</label>
+        <input type="number" id="lifts" name="lifts" placeholder="3" />
+        <button type="submit" id="submit-button" class="submit-button">
+          Open Sesame!
+        </button>
+      </form>
+    </div>
+
+    <div id="lobby" class="lobby hidden"></div>
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>
