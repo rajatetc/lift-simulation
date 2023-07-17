@@ -1,5 +1,9 @@
 import { store, initStore, updateLiftLocations } from "./store.js";
-import { DIRECTIONS } from "./constants.js";
+import {
+  DIRECTIONS,
+  LIFT_ANIMATION_TIME,
+  LIFT_TO_FLOOR_TIME,
+} from "./constants.js";
 
 const submitButton = document.getElementById("submit-button");
 const lobby = document.getElementById("lobby");
@@ -39,7 +43,7 @@ const openAndCloseDoors = (liftToOpenEl) => {
     setTimeout(() => {
       leftDoor.classList.remove("open-left-door");
       rightDoor.classList.remove("open-right-door");
-    }, 2500);
+    }, LIFT_ANIMATION_TIME);
   }
 };
 
@@ -77,19 +81,28 @@ const moveLift = ({ targetFloor, direction }) => {
       ? liftToMoveBasedOnDirection
       : nearestLiftOverall;
 
+  const timeToTargetFloor =
+    Math.abs(store.liftLocations[liftToMove] - targetFloor) *
+    LIFT_TO_FLOOR_TIME;
+
   const liftToOpenEl = document.getElementById(`lift-${liftToMove + 1}`);
   if (liftToOpenEl) {
     openAndCloseDoors(liftToOpenEl);
+
+    setTimeout(() => {
+      liftToOpenEl.style.transition = `bottom ${timeToTargetFloor}ms linear`;
+      liftToOpenEl.style.bottom = `${targetFloor * 100}px`;
+
+      setTimeout(() => {
+        openAndCloseDoors(liftToOpenEl);
+      }, timeToTargetFloor);
+    }, LIFT_ANIMATION_TIME * 2 + 100);
   }
 
   updateLiftLocations({
     liftToMove: liftToMove,
     targetFloor: targetFloor,
   });
-
-  setTimeout(() => {
-    makeLobby({ liftToOpen: liftToMove, targetFloor });
-  }, 5100);
 };
 
 const makeLobby = ({ liftToOpen = null, targetFloor = null } = {}) => {
@@ -98,7 +111,6 @@ const makeLobby = ({ liftToOpen = null, targetFloor = null } = {}) => {
 
   lobby.innerHTML = "";
 
-  //  todo: why are scrollbars appearing? fix later
   for (let i = 0; i < store.floors; i++) {
     /*** FLOORS ***/
     const floorContainer = document.createElement("div");
@@ -131,11 +143,13 @@ const makeLobby = ({ liftToOpen = null, targetFloor = null } = {}) => {
     liftsContainer.classList.add("lifts-container");
     floorContainer.appendChild(liftsContainer);
     for (let j = 0; j < store.lifts; j++) {
-      const lift = document.createElement("div");
-      lift.classList.add("lift");
       if (store.liftLocations[j] === i) {
+        const lift = document.createElement("div");
+        lift.classList.add("lift");
+        lift.style.bottom = `${store.liftLocations[j] * 90}px`;
         lift.id = `lift-${j + 1}`;
         lift.innerHTML = `<div class='left-door'></div><div class='right-door'></div>`;
+        liftsContainer.appendChild(lift);
 
         setTimeout(() => {
           if (liftToOpen === j && targetFloor === i) {
@@ -143,7 +157,6 @@ const makeLobby = ({ liftToOpen = null, targetFloor = null } = {}) => {
           }
         }, 0);
       }
-      liftsContainer.appendChild(lift);
     }
     upButton.addEventListener("click", () => {
       moveLift({ targetFloor: i, direction: DIRECTIONS.UP });
@@ -153,7 +166,6 @@ const makeLobby = ({ liftToOpen = null, targetFloor = null } = {}) => {
       moveLift({ targetFloor: i, direction: DIRECTIONS.DOWN });
     });
   }
-};
 
-// todo: toggle - remove later when all is developed
-//makeLobby();
+  window.scrollTo(0, document.body.scrollHeight);
+};
