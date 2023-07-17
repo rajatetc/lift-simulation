@@ -9,3 +9,7 @@ export const initStore = ({ floors, lifts, liftLocations }) => {
   store.lifts = lifts;
   store.liftLocations = liftLocations;
 };
+
+export const updateLiftLocations = ({ liftToMove, targetFloor }) => {
+  store.liftLocations[liftToMove] = targetFloor;
+};

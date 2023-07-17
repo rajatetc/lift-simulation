@@ -81,18 +81,29 @@ body {
   height: 50px;
   width: 50px;
   background-color: lightgray;
+  overflow: hidden;
 }
 
 .left-door {
   width: 25px;
   height: inherit;
   border: 1px solid black;
+  transition: transform 2.5s linear;
 }
 
 .right-door {
   width: 25px;
   height: inherit;
   border: 1px solid black;
+  transition: transform 2.5s linear;
+}
+
+.open-left-door {
+  transform: translateX(-25px);
+}
+
+.open-right-door {
+  transform: translateX(25px);
 }
 
 .lift-buttons-container {

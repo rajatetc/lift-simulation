@@ -1,4 +1,4 @@
-import { store, initStore } from "./store.js";
+import { store, initStore, updateLiftLocations } from "./store.js";
 import { DIRECTIONS } from "./constants.js";
 
 const submitButton = document.getElementById("submit-button");
@@ -17,8 +17,6 @@ submitButton.addEventListener("click", (e) => {
     liftLocations: Array(liftsValue).fill(0),
   });
 
-  console.log(store);
-
   if (
     isNaN(store.floors) ||
     isNaN(store.lifts) ||
@@ -30,6 +28,20 @@ submitButton.addEventListener("click", (e) => {
     makeLobby();
   }
 });
+
+const openAndCloseDoors = (liftToOpenEl) => {
+  const leftDoor = liftToOpenEl.querySelector(".left-door");
+  const rightDoor = liftToOpenEl.querySelector(".right-door");
+  if (leftDoor && rightDoor) {
+    leftDoor.classList.add("open-left-door");
+    rightDoor.classList.add("open-right-door");
+
+    setTimeout(() => {
+      leftDoor.classList.remove("open-left-door");
+      rightDoor.classList.remove("open-right-door");
+    }, 2500);
+  }
+};
 
 const moveLift = ({ targetFloor, direction }) => {
   let liftToMoveBasedOnDirection = -1;
@@ -65,12 +77,22 @@ const moveLift = ({ targetFloor, direction }) => {
       ? liftToMoveBasedOnDirection
       : nearestLiftOverall;
 
-  store.liftLocations[liftToMove] = targetFloor;
-  // todo: maybe optimize - whole lobby is getting created on every list
-  makeLobby();
+  const liftToOpenEl = document.getElementById(`lift-${liftToMove + 1}`);
+  if (liftToOpenEl) {
+    openAndCloseDoors(liftToOpenEl);
+  }
+
+  updateLiftLocations({
+    liftToMove: liftToMove,
+    targetFloor: targetFloor,
+  });
+
+  setTimeout(() => {
+    makeLobby({ liftToOpen: liftToMove, targetFloor });
+  }, 5100);
 };
 
-const makeLobby = () => {
+const makeLobby = ({ liftToOpen = null, targetFloor = null } = {}) => {
   formContainer.classList.replace("visible", "hidden");
   lobby.classList.replace("hidden", "visible");
 
@@ -114,6 +136,12 @@ const makeLobby = () => {
       if (store.liftLocations[j] === i) {
         lift.id = `lift-${j + 1}`;
         lift.innerHTML = `<div class='left-door'></div><div class='right-door'></div>`;
+
+        setTimeout(() => {
+          if (liftToOpen === j && targetFloor === i) {
+            openAndCloseDoors(lift);
+          }
+        }, 0);
       }
       liftsContainer.appendChild(lift);
     }
@@ -128,4 +156,4 @@ const makeLobby = () => {
 };
 
 // todo: toggle - remove later when all is developed
-// makeLobby();
+//makeLobby();
