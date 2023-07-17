@@ -167,5 +167,7 @@ const makeLobby = ({ liftToOpen = null, targetFloor = null } = {}) => {
     });
   }
 
-  window.scrollTo(0, document.body.scrollHeight);
+  if (store.floors > 6) {
+    window.scrollTo(0, document.body.scrollHeight);
+  }
 };
