@@ -32,7 +32,7 @@ submitButton.addEventListener("click", (e) => {
     (store.lifts > 3 && window.innerWidth <= 400) ||
     (store.floors > 6 && window.innerHeight < 650)
   ) {
-    alert("Please add less than 3 lifts & 7 floors to avoid scrolling");
+    alert("Please add less than 4 lifts & 7 floors to avoid scrolling");
   } else {
     makeLobby();
   }
@@ -168,7 +168,7 @@ const makeLobby = ({ liftToOpen = null, targetFloor = null } = {}) => {
     });
   }
 
-  if (store.floors > 6) {
+  if (store.floors > 4) {
     window.scrollTo(0, document.body.scrollHeight);
   }
 };
