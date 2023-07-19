@@ -29,7 +29,7 @@ submitButton.addEventListener("click", (e) => {
   ) {
     alert("Please enter a valid number of floors and lifts");
   } else if (
-    (store.lifts > 3 && window.innerWidth <= 350) ||
+    (store.lifts > 3 && window.innerWidth <= 400) ||
     (store.floors > 7 && window.innerHeight < 650)
   ) {
     alert("Please add less than 3 lifts & 7 floors to avoid scrolling");
