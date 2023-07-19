@@ -25,13 +25,30 @@ submitButton.addEventListener("click", (e) => {
     isNaN(store.floors) ||
     isNaN(store.lifts) ||
     store.floors > 10 ||
-    store.lifts > 5
+    store.lifts > 6
   ) {
     alert("Please enter a valid number of floors and lifts");
+  } else if (
+    (store.lifts > 3 && window.innerWidth <= 350) ||
+    (store.floors > 7 && window.innerHeight < 650)
+  ) {
+    alert("Please add less than 3 lifts & 7 floors to avoid scrolling");
   } else {
     makeLobby();
   }
 });
+
+const checkPendingFloors = () => {
+  if (store.pendingFloors.length > 0) {
+    for (let i = 0; i < store.liftLocations.length; i++) {
+      if (store.liftStatus[i] === "free") {
+        const nextFloor = store.pendingFloors.shift();
+        moveLift(nextFloor);
+        break;
+      }
+    }
+  }
+};
 
 const openAndCloseDoors = (liftToOpenEl) => {
   const leftDoor = liftToOpenEl.querySelector(".left-door");
@@ -47,62 +64,46 @@ const openAndCloseDoors = (liftToOpenEl) => {
   }
 };
 
-const moveLift = ({ targetFloor, direction }) => {
-  let liftToMoveBasedOnDirection = -1;
-  let nearestLiftDistanceBasedOnDirection = Infinity;
-  let nearestLiftOverall = -1;
-  let nearestLiftDistanceOverall = Infinity;
+const moveLift = (targetFloor) => {
+  store.pendingFloors.push(targetFloor);
+
+  let liftToMove = -1;
 
   for (let i = 0; i < store.liftLocations.length; i++) {
-    const distanceFromTargetFloor = Math.abs(
-      store.liftLocations[i] - targetFloor
-    );
-    const isLiftAboveTarget = store.liftLocations[i] > targetFloor;
-    const isLiftBelowTarget = store.liftLocations[i] < targetFloor;
-
-    if (
-      (direction === DIRECTIONS.DOWN && isLiftAboveTarget) ||
-      (direction === DIRECTIONS.UP && isLiftBelowTarget)
-    ) {
-      if (distanceFromTargetFloor < nearestLiftDistanceBasedOnDirection) {
-        nearestLiftDistanceBasedOnDirection = distanceFromTargetFloor;
-        liftToMoveBasedOnDirection = i;
-      }
-    }
-
-    if (distanceFromTargetFloor < nearestLiftDistanceOverall) {
-      nearestLiftDistanceOverall = distanceFromTargetFloor;
-      nearestLiftOverall = i;
+    if (store.liftStatus[i] === "free") {
+      liftToMove = i;
+      break;
     }
   }
 
-  const liftToMove =
-    liftToMoveBasedOnDirection !== -1
-      ? liftToMoveBasedOnDirection
-      : nearestLiftOverall;
+  if (liftToMove !== -1) {
+    targetFloor = store.pendingFloors.shift();
+    store.liftStatus[liftToMove] = "busy";
 
-  const timeToTargetFloor =
-    Math.abs(store.liftLocations[liftToMove] - targetFloor) *
-    LIFT_TO_FLOOR_TIME;
+    const timeToTargetFloor =
+      Math.abs(store.liftLocations[liftToMove] - targetFloor) *
+      LIFT_TO_FLOOR_TIME;
 
-  const liftToOpenEl = document.getElementById(`lift-${liftToMove + 1}`);
-  if (liftToOpenEl) {
-    openAndCloseDoors(liftToOpenEl);
-
-    setTimeout(() => {
-      liftToOpenEl.style.transition = `bottom ${timeToTargetFloor}ms linear`;
-      liftToOpenEl.style.bottom = `${targetFloor * 100}px`;
+    const liftToOpenEl = document.getElementById(`lift-${liftToMove + 1}`);
+    if (liftToOpenEl) {
+      openAndCloseDoors(liftToOpenEl);
 
       setTimeout(() => {
-        openAndCloseDoors(liftToOpenEl);
-      }, timeToTargetFloor);
-    }, LIFT_ANIMATION_TIME * 2 + 100);
-  }
+        liftToOpenEl.style.transition = `bottom ${timeToTargetFloor}ms linear`;
+        liftToOpenEl.style.bottom = `${targetFloor * 100}px`;
 
-  updateLiftLocations({
-    liftToMove: liftToMove,
-    targetFloor: targetFloor,
-  });
+        setTimeout(() => {
+          openAndCloseDoors(liftToOpenEl);
+          store.liftStatus[liftToMove] = "free";
+          updateLiftLocations({
+            liftToMove: liftToMove,
+            targetFloor: targetFloor,
+          });
+          checkPendingFloors();
+        }, timeToTargetFloor);
+      }, LIFT_ANIMATION_TIME * 2 + 100);
+    }
+  }
 };
 
 const makeLobby = ({ liftToOpen = null, targetFloor = null } = {}) => {
@@ -159,11 +160,11 @@ const makeLobby = ({ liftToOpen = null, targetFloor = null } = {}) => {
       }
     }
     upButton.addEventListener("click", () => {
-      moveLift({ targetFloor: i, direction: DIRECTIONS.UP });
+      moveLift(i);
     });
 
     downButton.addEventListener("click", () => {
-      moveLift({ targetFloor: i, direction: DIRECTIONS.DOWN });
+      moveLift(i);
     });
   }
 
