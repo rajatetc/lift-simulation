@@ -88,22 +88,20 @@ const moveLift = (targetFloor) => {
 
     const liftToOpenEl = document.getElementById(`lift-${liftToMove + 1}`);
     if (liftToOpenEl) {
-      openAndCloseDoors(liftToOpenEl);
+      liftToOpenEl.style.transition = `bottom ${timeToTargetFloor}ms linear`;
+      liftToOpenEl.style.bottom = `${targetFloor * 100}px`;
 
       setTimeout(() => {
-        liftToOpenEl.style.transition = `bottom ${timeToTargetFloor}ms linear`;
-        liftToOpenEl.style.bottom = `${targetFloor * 100}px`;
-
+        openAndCloseDoors(liftToOpenEl);
         setTimeout(() => {
-          openAndCloseDoors(liftToOpenEl);
           store.liftStatus[liftToMove] = "free";
           updateLiftLocations({
             liftToMove: liftToMove,
             targetFloor: targetFloor,
           });
           checkPendingFloors();
-        }, timeToTargetFloor);
-      }, LIFT_ANIMATION_TIME * 2 + 100);
+        }, LIFT_ANIMATION_TIME * 2 + 100);
+      }, timeToTargetFloor);
     }
   }
 };
